@@ -1,0 +1,37 @@
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public List<LoanAccount> getOverdueLoans(List<LoanAccount> accounts) {
+
+    // Handle null input list
+    if (accounts == null) {
+        return new ArrayList<>();
+    }
+
+    // Initialize result list
+    List<LoanAccount> result = new ArrayList<>();
+
+    Date currentDate = new Date();
+
+    for (LoanAccount account : accounts) {
+
+        // Skip null account objects
+        if (account == null) {
+            continue;
+        }
+
+        Date dueDate = account.getDueDate();
+
+        // Check dueDate is not null before calling before()
+        if (dueDate != null && dueDate.before(currentDate)) {
+
+            // Add only overdue accounts having positive outstanding balance
+            if (account.getOutstandingBalance() > 0) {
+                result.add(account);
+            }
+        }
+    }
+
+    return result;
+}
