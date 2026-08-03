@@ -1,0 +1,47 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class DocumentValidator {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(DocumentValidator.class);
+
+    public ValidationResult validate(Document doc) {
+
+        try {
+            if (doc == null) {
+                logger.warn("Validation failed: Document is null");
+                return ValidationResult.invalid("Document is null");
+            }
+
+            String content = doc.extractContent();
+
+            if (content == null || content.isEmpty()) {
+                logger.warn("Validation failed: Empty content");
+                return ValidationResult.invalid("Empty content");
+            }
+
+            return runValidationRules(content);
+
+        } catch (Exception e) {
+            logger.error("Unexpected error while validating document", e);
+            throw e;
+        }
+    }
+
+    public void validateBatch(List<Document> docs) {
+
+        for (Document doc : docs) {
+            try {
+                ValidationResult result = validate(doc);
+
+                if (result != null && result.isValid()) {
+                    saveResult(result);
+                }
+
+            } catch (Exception e) {
+                logger.error("Failed to validate document in batch", e);
+            }
+        }
+    }
+}
